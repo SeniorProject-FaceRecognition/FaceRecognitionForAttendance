@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:senior_project/models/lecturer.dart';
 import 'package:senior_project/pages/login.dart';
-import 'package:senior_project/pages/selectClass.dart';
+import 'package:senior_project/pages/select_class.dart';
 
 class SplashPage extends StatelessWidget {
   const SplashPage({super.key});
@@ -10,9 +9,9 @@ class SplashPage extends StatelessWidget {
   Widget build(BuildContext context) {
     var x = 1;
     if (x == 1) {
-      return SelectClass();
+      return const SelectClass();
     } else {
-      return LoginPage();
+      return const LoginPage();
     }
   }
 }
