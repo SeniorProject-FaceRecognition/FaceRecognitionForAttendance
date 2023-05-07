@@ -13,6 +13,7 @@ class SplashPage extends StatelessWidget {
     }
 
     return Scaffold(
+      resizeToAvoidBottomInset: false,
       body: FutureBuilder(
         future: _initializeFirebase(),
         builder: (context, snapshot) {
