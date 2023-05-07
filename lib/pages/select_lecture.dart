@@ -19,7 +19,7 @@ List<Lecture> lectures = [];
 
 class _SelectLectureState extends State<SelectLecture> {
   @override
-  void initState() {
+  Widget build(BuildContext context) {
     lectures = widget.lectures!
         .where((element) =>
             DateFormat.Md()
@@ -30,11 +30,6 @@ class _SelectLectureState extends State<SelectLecture> {
     lectures.sort(
       (a, b) => a.day!.compareTo(b.day!),
     );
-    super.initState();
-  }
-
-  @override
-  Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: Center(
