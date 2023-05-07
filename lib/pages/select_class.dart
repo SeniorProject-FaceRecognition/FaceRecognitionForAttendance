@@ -1,10 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:senior_project/Widgets/course_widget.dart';
 import 'package:senior_project/models/course.dart';
 import 'package:senior_project/models/lecture.dart';
 import 'package:senior_project/models/lecturer.dart';
 import 'package:senior_project/models/section.dart';
 import 'package:senior_project/pages/select_Lecture.dart';
+
+import '../services/Authentication.dart';
 
 class SelectClass extends StatefulWidget {
   const SelectClass({
@@ -63,6 +66,7 @@ class _SelectClassState extends State<SelectClass> {
 
   @override
   Widget build(BuildContext context) {
+    final auth = Provider.of<Authentication>(context);
     return Scaffold(
       appBar: AppBar(
         leading: Container(
@@ -75,6 +79,13 @@ class _SelectClassState extends State<SelectClass> {
           ),
         ),
         title: Text("Welcome, Dr. ${lecturer?.name!}"),
+        actions: [
+          IconButton(
+              onPressed: () async {
+                auth.signOut();
+              },
+              icon: const Icon(Icons.logout))
+        ],
       ),
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.start,

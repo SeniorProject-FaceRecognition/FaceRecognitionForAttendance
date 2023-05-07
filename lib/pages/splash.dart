@@ -1,30 +1,24 @@
-import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:senior_project/pages/login.dart';
+import 'package:senior_project/pages/select_class.dart';
+import 'package:senior_project/services/Authentication.dart';
 
-class SplashPage extends StatelessWidget {
+class SplashPage extends StatefulWidget {
   const SplashPage({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    Future<FirebaseApp> _initializeFirebase() async {
-      FirebaseApp firebaseApp = await Firebase.initializeApp();
-      return firebaseApp;
-    }
+  State<SplashPage> createState() => _SplashPageState();
+}
 
-    return Scaffold(
-      resizeToAvoidBottomInset: false,
-      body: FutureBuilder(
-        future: _initializeFirebase(),
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.done) {
-            return const LoginPage();
-          }
-          return const Center(
-            child: CircularProgressIndicator(),
-          );
-        },
-      ),
-    );
+class _SplashPageState extends State<SplashPage> {
+  @override
+  Widget build(BuildContext context) {
+    final auth = Provider.of<Authentication>(context);
+    if (auth.user != null) {
+      return const SelectClass();
+    } else {
+      return const LoginPage();
+    }
   }
 }
