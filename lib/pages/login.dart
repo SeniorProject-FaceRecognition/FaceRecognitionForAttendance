@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:senior_project/pages/reset_password.dart';
 import 'package:senior_project/services/Authentication.dart';
 
 class LoginPage extends StatefulWidget {
@@ -25,6 +26,7 @@ class _LoginPageState extends State<LoginPage> {
   Widget build(BuildContext context) {
     final auth = Provider.of<Authentication>(context);
     return Scaffold(
+      resizeToAvoidBottomInset: false,
       body: Padding(
         padding: const EdgeInsets.all(16),
         child: Column(
@@ -48,7 +50,11 @@ class _LoginPageState extends State<LoginPage> {
               ),
             ),
             const SizedBox(
-              height: 44,
+              height: 24,
+            ),
+            Text(
+              error,
+              style: const TextStyle(color: Colors.red, fontSize: 14),
             ),
             TextFormField(
               validator: (value) => value!.isEmpty ? 'Enter an email' : null,
@@ -81,9 +87,17 @@ class _LoginPageState extends State<LoginPage> {
             const SizedBox(
               height: 12,
             ),
-            const Text(
-              "Dont't remember your password?",
-              style: TextStyle(color: Colors.blue),
+            InkWell(
+              onTap: () => Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => const ResetPassword(),
+                ),
+              ),
+              child: const Text(
+                "Don't remember your password?",
+                style: TextStyle(color: Colors.blue),
+              ),
             ),
             const SizedBox(
               height: 88,
@@ -103,6 +117,7 @@ class _LoginPageState extends State<LoginPage> {
                   );
                   if (result == null) {
                     error = ' wrong email or password';
+                    setState(() {});
                   }
                 },
                 child: const Text(
@@ -113,10 +128,6 @@ class _LoginPageState extends State<LoginPage> {
             ),
             const SizedBox(
               height: 12,
-            ),
-            Text(
-              error,
-              style: const TextStyle(color: Colors.red, fontSize: 14),
             ),
           ],
         ),

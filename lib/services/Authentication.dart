@@ -16,13 +16,24 @@ class Authentication with ChangeNotifier {
       // ignore: avoid_print
       print(e.toString());
     }
-
     return null;
   }
 
   Future signOut() async {
     try {
       await _auth.signOut();
+      notifyListeners();
+    } catch (e) {
+      // ignore: avoid_print
+      print(
+        e.toString(),
+      );
+    }
+  }
+
+  Future resetPassword(String email) async {
+    try {
+      await _auth.sendPasswordResetEmail(email: email);
       notifyListeners();
     } catch (e) {
       // ignore: avoid_print
