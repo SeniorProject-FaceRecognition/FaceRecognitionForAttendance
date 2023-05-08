@@ -12,6 +12,7 @@ class LoginPage extends StatefulWidget {
 class _LoginPageState extends State<LoginPage> {
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
+  String error = '';
 
   @override
   void dispose() {
@@ -49,7 +50,8 @@ class _LoginPageState extends State<LoginPage> {
             const SizedBox(
               height: 44,
             ),
-            TextField(
+            TextFormField(
+              validator: (value) => value!.isEmpty ? 'Enter an email' : null,
               controller: _emailController,
               keyboardType: TextInputType.emailAddress,
               decoration: const InputDecoration(
@@ -63,7 +65,9 @@ class _LoginPageState extends State<LoginPage> {
             const SizedBox(
               height: 26,
             ),
-            TextField(
+            TextFormField(
+              validator: (value) =>
+                  value!.length < 6 ? 'Enter a password 6+ chars long' : null,
               controller: _passwordController,
               obscureText: true,
               decoration: const InputDecoration(
@@ -93,14 +97,26 @@ class _LoginPageState extends State<LoginPage> {
                 shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(12)),
                 onPressed: () async {
-                  auth.signIn(_emailController.text.trim(),
-                      _passwordController.text.trim());
+                  var result = await auth.signIn(
+                    _emailController.text.trim(),
+                    _passwordController.text.trim(),
+                  );
+                  if (result == null) {
+                    error = ' wrong email or password';
+                  }
                 },
                 child: const Text(
                   'Login',
                   style: TextStyle(color: Colors.white, fontSize: 18),
                 ),
               ),
+            ),
+            const SizedBox(
+              height: 12,
+            ),
+            Text(
+              error,
+              style: const TextStyle(color: Colors.red, fontSize: 14),
             ),
           ],
         ),
