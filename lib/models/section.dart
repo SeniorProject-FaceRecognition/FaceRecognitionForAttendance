@@ -4,7 +4,8 @@ class Section {
   final String? id;
   final String? days;
   final String? time;
-  final List<Lecture>? lectures;
+  final String? courseId;
+  List<Lecture>? lectures;
 
-  Section(this.id, this.days, this.time, this.lectures);
+  Section(this.id, this.days, this.time, this.lectures, this.courseId);
 }

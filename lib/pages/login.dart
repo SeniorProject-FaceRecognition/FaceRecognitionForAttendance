@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:senior_project/pages/reset_password.dart';
-import 'package:senior_project/services/Authentication.dart';
+import 'package:senior_project/services/authentication.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});

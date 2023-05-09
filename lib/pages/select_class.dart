@@ -1,13 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:senior_project/Widgets/course_widget.dart';
-import 'package:senior_project/models/course.dart';
-import 'package:senior_project/models/lecture.dart';
-import 'package:senior_project/models/lecturer.dart';
+import 'package:senior_project/models/instructor.dart';
 import 'package:senior_project/models/section.dart';
 import 'package:senior_project/pages/select_Lecture.dart';
 
-import '../services/Authentication.dart';
+import '../services/authentication.dart';
 
 class SelectClass extends StatefulWidget {
   const SelectClass({
@@ -18,49 +16,14 @@ class SelectClass extends StatefulWidget {
   State<SelectClass> createState() => _SelectClassState();
 }
 
-List<Lecture>? lectures1 = [
-  Lecture(
-    DateTime(2023, 5, 7, 13, 00),
-    [],
-  ),
-  Lecture(
-    DateTime(2023, 5, 7, 11, 00),
-    [],
-  ),
-  Lecture(
-    DateTime(2023, 5, 7, 15, 00),
-    [],
-  ),
-  Lecture(
-    DateTime(2023, 5, 10, 15, 00),
-    [],
-  ),
-  Lecture(
-    DateTime(2023, 5, 9, 15, 00),
-    [],
-  ),
-  Lecture(
-    DateTime(2023, 5, 8, 15, 00),
-    [],
-  ),
-];
-
-List<Section>? sections1 = [
-  Section("IT1", "TRU", "13:00 - 14:40", []),
-  Section("IT2", "TRU", "11:00 - 12:40", lectures1),
-  Section("IT3", "TRU", "15:00 - 16:40", []),
-];
-List<Section>? sections2 = [
-  Section("IT1", "MW", "13:00 - 14:40", []),
-  Section("IT2", "MW", "15:00 - 16:40", []),
+List<Section>? sections = [
+  Section("IT1", "TRU", "13:00 - 14:40", [], "CPIT - 201"),
+  Section("IT2", "TRU", "11:00 - 12:40", [], "CPIT - 401"),
+  Section("IT3", "TRU", "15:00 - 16:40", [], "CPIT - 425"),
 ];
 
 class _SelectClassState extends State<SelectClass> {
-  List<Course>? courses = [
-    Course("CPIT 101", sections1!),
-    Course("CPIT 201", sections2!)
-  ];
-  Lecturer? lecturer = Lecturer('Motasem Aljarah', 'id', 'image');
+  Instructor? lecturer = Instructor('Motasem Aljarah', 'id', 'image', []);
 
   int sectionindex = 0;
 
@@ -92,32 +55,30 @@ class _SelectClassState extends State<SelectClass> {
         children: [
           const Padding(
             padding: EdgeInsets.all(8.0),
-            child: Text("Courses"),
+            child: Text("Courses:"),
           ),
           const SizedBox(
             height: 20,
           ),
-          for (int i = 0; i < courses!.length; i++)
-            Expanded(
-              child: CourseWidget(
-                course: courses![i],
-                onSelectParam: (p0) {
-                  sectionindex = p0;
+          Expanded(
+            child: CourseWidget(
+              sections: sections,
+              onSelectParam: (p0) {
+                sectionindex = p0;
 
-                  setState(() {});
-                },
-                function: () => Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => SelectLecture(
-                      lectures: courses![i].sections[sectionindex].lectures,
-                      header:
-                          "${courses![i].id!} ,${courses![i].sections[sectionindex].id}",
-                    ),
+                setState(() {});
+              },
+              function: () => Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => SelectLecture(
+                    header: sections![sectionindex].id,
+                    section: sections![sectionindex],
                   ),
                 ),
               ),
             ),
+          ),
         ],
       ),
     );

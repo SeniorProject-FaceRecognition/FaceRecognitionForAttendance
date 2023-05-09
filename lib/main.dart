@@ -2,7 +2,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:senior_project/pages/splash.dart';
-import 'package:senior_project/services/Authentication.dart';
+import 'package:senior_project/services/authentication.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();

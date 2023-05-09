@@ -1,12 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:senior_project/models/lecture.dart';
+import 'package:senior_project/models/section.dart';
 import 'package:syncfusion_flutter_datepicker/datepicker.dart';
 
 class SelectLecture extends StatefulWidget {
-  const SelectLecture({super.key, this.lectures, this.header});
+  const SelectLecture({super.key, this.section, this.header});
 
-  final List<Lecture>? lectures;
+  final Section? section;
   final String? header;
 
   @override
@@ -15,19 +16,44 @@ class SelectLecture extends StatefulWidget {
 
 DateTime date = DateTime.now();
 
-List<Lecture> lectures = [];
+List<Lecture> lectures = [
+  Lecture(
+    DateTime(2023, 5, 7, 13, 00),
+    [],
+  ),
+  Lecture(
+    DateTime(2023, 5, 7, 11, 00),
+    [],
+  ),
+  Lecture(
+    DateTime(2023, 5, 7, 15, 00),
+    [],
+  ),
+  Lecture(
+    DateTime(2023, 5, 10, 15, 00),
+    [],
+  ),
+  Lecture(
+    DateTime(2023, 5, 9, 15, 00),
+    [],
+  ),
+  Lecture(
+    DateTime(2023, 5, 8, 15, 00),
+    [],
+  ),
+];
 
 class _SelectLectureState extends State<SelectLecture> {
   @override
   Widget build(BuildContext context) {
-    lectures = widget.lectures!
+    widget.section!.lectures = lectures
         .where((element) =>
             DateFormat.Md()
                 .format(date)
                 .compareTo(DateFormat.Md().format(element.day!)) ==
             0)
         .toList();
-    lectures.sort(
+    widget.section!.lectures!.sort(
       (a, b) => a.day!.compareTo(b.day!),
     );
     return Scaffold(
@@ -66,17 +92,43 @@ class _SelectLectureState extends State<SelectLecture> {
                     var width = MediaQuery.of(context).size.width;
 
                     return AlertDialog(
-                      content: Container(
-                        height: height / 2,
-                        width: width / 2,
-                        color: Colors.white,
-                        child: SfDateRangePicker(
-                          onSelectionChanged:
-                              (dateRangePickerSelectionChangedArgs) {
-                            date = dateRangePickerSelectionChangedArgs.value;
-                            setState(() {});
-                          },
-                        ),
+                      content: Stack(
+                        children: [
+                          Container(
+                            height: height / 1.5,
+                            width: width,
+                            color: Colors.white,
+                            child: SfDateRangePicker(
+                              onSelectionChanged:
+                                  (dateRangePickerSelectionChangedArgs) {
+                                date =
+                                    dateRangePickerSelectionChangedArgs.value;
+                                setState(() {});
+                              },
+                            ),
+                          ),
+                          const SizedBox(
+                            height: 6,
+                          ),
+                          Positioned(
+                            bottom: 10,
+                            child: RawMaterialButton(
+                              fillColor: const Color(0xFF0069FE),
+                              elevation: 0,
+                              padding: const EdgeInsets.symmetric(vertical: 20),
+                              shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(12)),
+                              onPressed: () => Navigator.pop(context),
+                              child: const Text(
+                                'Ok',
+                                style: TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 14,
+                                ),
+                              ),
+                            ),
+                          ),
+                        ],
                       ),
                     );
                   },
@@ -92,7 +144,7 @@ class _SelectLectureState extends State<SelectLecture> {
           ),
           Expanded(
             child: ListView.builder(
-              itemCount: lectures.length,
+              itemCount: widget.section!.lectures!.length,
               itemBuilder: (context, index) {
                 return Container(
                   padding: const EdgeInsets.all(10),
@@ -101,7 +153,11 @@ class _SelectLectureState extends State<SelectLecture> {
                     border: Border.all(),
                     borderRadius: BorderRadius.circular(8),
                   ),
-                  child: Text(DateFormat.jm().format(lectures[index].day!)),
+                  child: Text(
+                    DateFormat.jm().format(
+                      widget.section!.lectures![index].day!,
+                    ),
+                  ),
                 );
               },
             ),
