@@ -2,7 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:senior_project/models/lecture.dart';
 import 'package:senior_project/models/section.dart';
+import 'package:senior_project/models/student.dart';
 import 'package:syncfusion_flutter_datepicker/datepicker.dart';
+
+import 'attendance_page.dart';
 
 class SelectLecture extends StatefulWidget {
   const SelectLecture({super.key, this.section, this.header});
@@ -16,34 +19,26 @@ class SelectLecture extends StatefulWidget {
 
 DateTime date = DateTime.now();
 
-List<Lecture> lectures = [
-  Lecture(
-    DateTime(2023, 5, 7, 13, 00),
-    [],
-  ),
-  Lecture(
-    DateTime(2023, 5, 7, 11, 00),
-    [],
-  ),
-  Lecture(
-    DateTime(2023, 5, 7, 15, 00),
-    [],
-  ),
-  Lecture(
-    DateTime(2023, 5, 10, 15, 00),
-    [],
-  ),
-  Lecture(
-    DateTime(2023, 5, 9, 15, 00),
-    [],
-  ),
-  Lecture(
-    DateTime(2023, 5, 8, 15, 00),
-    [],
-  ),
-];
-
 class _SelectLectureState extends State<SelectLecture> {
+  List<Lecture> lectures = [
+    Lecture(DateTime(2023, 5, 7, 13, 00), []),
+    Lecture(DateTime(2023, 5, 7, 11, 00), []),
+    Lecture(DateTime(2023, 5, 7, 15, 00), []),
+    Lecture(DateTime(2023, 5, 10, 15, 00), []),
+    Lecture(DateTime(2023, 5, 9, 15, 00), []),
+    Lecture(DateTime(2023, 5, 8, 15, 00), []),
+  ];
+
+//TODO different students list objects to differeniate attendance status
+  @override
+  void initState() {
+    for (var i = 0; i < lectures.length; i++) {
+      List<Student>? students = widget.section!.students;
+      lectures[i].setStudents = students!;
+    }
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
     widget.section!.lectures = lectures
@@ -146,16 +141,28 @@ class _SelectLectureState extends State<SelectLecture> {
             child: ListView.builder(
               itemCount: widget.section!.lectures!.length,
               itemBuilder: (context, index) {
-                return Container(
-                  padding: const EdgeInsets.all(10),
-                  margin: const EdgeInsets.all(10),
-                  decoration: BoxDecoration(
-                    border: Border.all(),
-                    borderRadius: BorderRadius.circular(8),
+                return InkWell(
+                  onTap: () => Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => AttendancePage(
+                        lecture: widget.section!.lectures![index],
+                        time: date,
+                        section: widget.section,
+                      ),
+                    ),
                   ),
-                  child: Text(
-                    DateFormat.jm().format(
-                      widget.section!.lectures![index].day!,
+                  child: Container(
+                    padding: const EdgeInsets.all(10),
+                    margin: const EdgeInsets.all(10),
+                    decoration: BoxDecoration(
+                      border: Border.all(),
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    child: Text(
+                      DateFormat.jm().format(
+                        widget.section!.lectures![index].day!,
+                      ),
                     ),
                   ),
                 );

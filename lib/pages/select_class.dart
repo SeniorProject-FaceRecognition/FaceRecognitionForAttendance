@@ -5,6 +5,7 @@ import 'package:senior_project/models/instructor.dart';
 import 'package:senior_project/models/section.dart';
 import 'package:senior_project/pages/select_Lecture.dart';
 
+import '../models/student.dart';
 import '../services/authentication.dart';
 
 class SelectClass extends StatefulWidget {
@@ -16,10 +17,15 @@ class SelectClass extends StatefulWidget {
   State<SelectClass> createState() => _SelectClassState();
 }
 
+List<Student>? students = [
+  Student("1937439", "Mohammed"),
+  Student("2056841", "Khalid"),
+  Student("1865454", "Abdullah"),
+];
 List<Section>? sections = [
-  Section("IT1", "TRU", "13:00 - 14:40", [], "CPIT - 201"),
-  Section("IT2", "TRU", "11:00 - 12:40", [], "CPIT - 401"),
-  Section("IT3", "TRU", "15:00 - 16:40", [], "CPIT - 425"),
+  Section("IT1", "TRU", "13:00 - 14:40", [], "CPIT - 201", students),
+  Section("IT2", "TRU", "11:00 - 12:40", [], "CPIT - 401", []),
+  Section("IT3", "TRU", "15:00 - 16:40", [], "CPIT - 425", []),
 ];
 
 class _SelectClassState extends State<SelectClass> {
