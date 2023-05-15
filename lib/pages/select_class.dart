@@ -18,18 +18,59 @@ class SelectClass extends StatefulWidget {
 }
 
 List<Student>? students = [
-  Student("1937439", "Mohammed"),
-  Student("2056841", "Khalid"),
-  Student("1865454", "Abdullah"),
+  Student(studentId: "1937439", name: "Mohammed"),
+  Student(studentId: "2056841", name: "Khalid"),
+  Student(studentId: "1865454", name: "Abdullah"),
 ];
 List<Section>? sections = [
-  Section("IT1", "TRU", "13:00 - 14:40", [], "CPIT - 201", students),
-  Section("IT2", "TRU", "11:00 - 12:40", [], "CPIT - 401", []),
-  Section("IT3", "TRU", "15:00 - 16:40", [], "CPIT - 425", []),
+  Section(
+    name: "IT1",
+    days: "TRU",
+    time: "13:00 - 14:40",
+    lectures: [],
+    courseId: "CPIT - 201",
+    students: students,
+  ),
+  Section(
+    name: "IT2",
+    days: "TRU",
+    time: "11:00 - 12:40",
+    lectures: [],
+    courseId: "CPIT - 401",
+    students: [],
+  ),
+  Section(
+    name: "IT3",
+    days: "TRU",
+    time: "15:00 - 16:40",
+    lectures: [],
+    courseId: "CPIT - 425",
+    students: [],
+  ),
 ];
 
+//  void loadUser() async {
+//     var doc = await userController.database
+//         .collection('users')
+//         .doc(auth.user!.uid)
+//         .get();
+//     if (doc.exists) {
+//       appUser = auth.getAppUser(doc);
+//       setState(() {
+//         isLoading = false;
+//       });
+//     } else {
+//       auth.deleteUser();
+//     }
+//   }
+
 class _SelectClassState extends State<SelectClass> {
-  Instructor? lecturer = Instructor('Motasem Aljarah', 'id', 'image', []);
+  Instructor? lecturer = Instructor(
+    name: 'Motasem Aljarah',
+    id: 'id',
+    image: 'image',
+    sections: [],
+  );
 
   int sectionindex = 0;
 

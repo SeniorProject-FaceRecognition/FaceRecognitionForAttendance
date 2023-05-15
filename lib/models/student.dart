@@ -1,12 +1,24 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+
 class Student {
-  final String? id;
-  final String? name;
-  bool? isPresent = false;
+  String? id;
+  String? studentId;
+  String? name;
 
-  Student(
+  Student({
     this.id,
+    this.studentId,
     this.name,
-  );
+  });
 
-  set setIsPresent(bool x) => isPresent = x;
+  Student getStudent(DocumentSnapshot<Map<String, dynamic>> doc) {
+    var data = doc.data()!;
+    var student = Student(
+      id: doc.id,
+      studentId: data['id'],
+      name: data['name'],
+    );
+
+    return student;
+  }
 }

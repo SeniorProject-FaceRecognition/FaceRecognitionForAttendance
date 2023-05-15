@@ -1,14 +1,27 @@
-import 'package:senior_project/models/student.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:senior_project/models/attendance.dart';
 
 class Lecture {
-  final DateTime? day;
+  final String? id;
+  DateTime? day;
 
-  List<Student>? attendanceList;
+  List<Attendance>? attendanceList;
 
-  Lecture(
+  Lecture({
+    this.id,
     this.day,
     this.attendanceList,
-  );
+  });
 
-  set setStudents(List<Student> students) => attendanceList = students;
+  set setStudents(List<Attendance> students) => attendanceList = students;
+
+  Lecture getLecture(DocumentSnapshot<Map<String, dynamic>> doc) {
+    var data = doc.data()!;
+    var lecture = Lecture(
+      id: doc.id,
+      day: data['time'],
+    );
+
+    return lecture;
+  }
 }

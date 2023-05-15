@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:senior_project/models/lecture.dart';
 import 'package:senior_project/models/section.dart';
-import 'package:senior_project/models/student.dart';
 import 'package:syncfusion_flutter_datepicker/datepicker.dart';
 
 import 'attendance_page.dart';
@@ -21,23 +20,13 @@ DateTime date = DateTime.now();
 
 class _SelectLectureState extends State<SelectLecture> {
   List<Lecture> lectures = [
-    Lecture(DateTime(2023, 5, 7, 13, 00), []),
-    Lecture(DateTime(2023, 5, 7, 11, 00), []),
-    Lecture(DateTime(2023, 5, 7, 15, 00), []),
-    Lecture(DateTime(2023, 5, 10, 15, 00), []),
-    Lecture(DateTime(2023, 5, 9, 15, 00), []),
-    Lecture(DateTime(2023, 5, 8, 15, 00), []),
+    Lecture(day: DateTime(2023, 5, 7, 13, 00), attendanceList: []),
+    Lecture(day: DateTime(2023, 5, 7, 11, 00), attendanceList: []),
+    Lecture(day: DateTime(2023, 5, 7, 15, 00), attendanceList: []),
+    Lecture(day: DateTime(2023, 5, 10, 15, 00), attendanceList: []),
+    Lecture(day: DateTime(2023, 5, 9, 15, 00), attendanceList: []),
+    Lecture(day: DateTime(2023, 5, 8, 15, 00), attendanceList: []),
   ];
-
-//TODO different students list objects to differeniate attendance status
-  @override
-  void initState() {
-    for (var i = 0; i < lectures.length; i++) {
-      List<Student>? students = widget.section!.students;
-      lectures[i].setStudents = students!;
-    }
-    super.initState();
-  }
 
   @override
   Widget build(BuildContext context) {
