@@ -1,5 +1,4 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:senior_project/models/lecture.dart';
 import 'package:senior_project/models/student.dart';
 
 class Section {

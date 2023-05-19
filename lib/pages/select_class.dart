@@ -18,36 +18,12 @@ class SelectClass extends StatefulWidget {
   State<SelectClass> createState() => _SelectClassState();
 }
 
-List<Section>? sections = [
-  // Section(
-  //   name: "IT1",
-  //   days: "TRU",
-  //   time: "13:00 - 14:40",
-  //   lectures: [],
-  //   courseId: "CPIT - 201",
-  //   students: students,
-  // ),
-  // Section(
-  //   name: "IT2",
-  //   days: "TRU",
-  //   time: "11:00 - 12:40",
-  //   lectures: [],
-  //   courseId: "CPIT - 401",
-  //   students: [],
-  // ),
-  // Section(
-  //   name: "IT3",
-  //   days: "TRU",
-  //   time: "15:00 - 16:40",
-  //   lectures: [],
-  //   courseId: "CPIT - 425",
-  //   students: [],
-  // ),
-];
+List<Section>? sections = [];
+Instructor? instructor;
 
 class _SelectClassState extends State<SelectClass> {
   final FirebaseFirestore database = FirebaseFirestore.instance;
-  Instructor? instructor;
+
   int sectionindex = 0;
   bool isLoading = true;
 
@@ -61,6 +37,7 @@ class _SelectClassState extends State<SelectClass> {
   @override
   Widget build(BuildContext context) {
     final auth = Provider.of<Authentication>(context);
+
     if (isLoading) {
       return const CircularProgressIndicator(
         backgroundColor: Colors.white,
@@ -109,7 +86,7 @@ class _SelectClassState extends State<SelectClass> {
                   context,
                   MaterialPageRoute(
                     builder: (context) => SelectLecture(
-                      instructor: instructor,
+                      instructorId: widget.instructorId,
                       header: sections![sectionindex].name,
                       section: sections![sectionindex],
                     ),
@@ -128,6 +105,7 @@ class _SelectClassState extends State<SelectClass> {
         await database.collection('instructor').doc(widget.instructorId).get();
     if (doc.exists) {
       instructor = Instructor.getInstructor(doc);
+
       setState(() {
         isLoading = false;
       });
@@ -137,7 +115,7 @@ class _SelectClassState extends State<SelectClass> {
   void loadSections() async {
     var collection = await database
         .collection('instructor')
-        .doc(instructor!.id)
+        .doc(widget.instructorId)
         .collection('sections')
         .get();
 

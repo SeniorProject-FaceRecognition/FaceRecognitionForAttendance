@@ -4,14 +4,13 @@ import 'package:intl/intl.dart';
 import 'package:senior_project/models/lecture.dart';
 import 'package:senior_project/models/section.dart';
 import 'package:syncfusion_flutter_datepicker/datepicker.dart';
-
-import '../models/instructor.dart';
 import '../models/student.dart';
 import 'attendance_page.dart';
 
 class SelectLecture extends StatefulWidget {
-  const SelectLecture({super.key, this.section, this.header, this.instructor});
-  final Instructor? instructor;
+  const SelectLecture(
+      {super.key, this.section, this.header, this.instructorId});
+  final String? instructorId;
   final Section? section;
   final String? header;
 
@@ -19,40 +18,30 @@ class SelectLecture extends StatefulWidget {
   State<SelectLecture> createState() => _SelectLectureState();
 }
 
-DateTime date = DateTime.now();
-
 class _SelectLectureState extends State<SelectLecture> {
   final FirebaseFirestore database = FirebaseFirestore.instance;
-  List<Student>? students = [
-    // Student(studentId: "1937439", name: "Mohammed"),
-    // Student(studentId: "2056841", name: "Khalid"),
-    // Student(studentId: "1865454", name: "Abdullah"),
-  ];
-  List<Lecture> lectures = [
-    // Lecture(day: DateTime(2023, 5, 7, 13, 00), attendanceList: []),
-    // Lecture(day: DateTime(2023, 5, 7, 11, 00), attendanceList: []),
-    // Lecture(day: DateTime(2023, 5, 7, 15, 00), attendanceList: []),
-    // Lecture(day: DateTime(2023, 5, 10, 15, 00), attendanceList: []),
-    // Lecture(day: DateTime(2023, 5, 9, 15, 00), attendanceList: []),
-    // Lecture(day: DateTime(2023, 5, 8, 15, 00), attendanceList: []),
-  ];
+  var date = DateTime.now();
+  List<Student>? students = [];
+  List<Lecture> lectures = [];
+  List<Lecture> selectedDateLectures = [];
   @override
   void initState() {
     loadLectures();
     loadStudents();
+
     super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
-    lectures
+    selectedDateLectures = lectures
         .where((element) =>
             DateFormat.Md()
                 .format(date)
                 .compareTo(DateFormat.Md().format(element.day!)) ==
             0)
         .toList();
-    lectures.sort(
+    selectedDateLectures.sort(
       (a, b) => a.day!.compareTo(b.day!),
     );
 
@@ -144,15 +133,16 @@ class _SelectLectureState extends State<SelectLecture> {
           ),
           Expanded(
             child: ListView.builder(
-              itemCount: lectures.length,
+              itemCount: selectedDateLectures.length,
               itemBuilder: (context, index) {
                 return InkWell(
                   onTap: () => Navigator.push(
                     context,
                     MaterialPageRoute(
                       builder: (context) => AttendancePage(
-                        lecture: lectures[index],
-                        time: date,
+                        instructor: widget.instructorId,
+                        lecture: selectedDateLectures[index],
+                        time: selectedDateLectures[index].day,
                         section: widget.section,
                       ),
                     ),
@@ -166,7 +156,7 @@ class _SelectLectureState extends State<SelectLecture> {
                     ),
                     child: Text(
                       DateFormat.jm().format(
-                        lectures[index].day!,
+                        selectedDateLectures[index].day!,
                       ),
                     ),
                   ),
@@ -182,7 +172,7 @@ class _SelectLectureState extends State<SelectLecture> {
   void loadStudents() async {
     var collection = await database
         .collection('instructor')
-        .doc(widget.instructor!.id)
+        .doc(widget.instructorId!)
         .collection('sections')
         .doc(widget.section!.id)
         .collection('students')
@@ -195,7 +185,7 @@ class _SelectLectureState extends State<SelectLecture> {
   void loadLectures() async {
     var collection = await database
         .collection('instructor')
-        .doc(widget.instructor!.id)
+        .doc(widget.instructorId!)
         .collection('sections')
         .doc(widget.section!.id)
         .collection('lectures')

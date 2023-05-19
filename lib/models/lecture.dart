@@ -1,5 +1,4 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:senior_project/models/attendance.dart';
 
 class Lecture {
   final String? id;
@@ -14,7 +13,7 @@ class Lecture {
     var data = doc.data()!;
     var lecture = Lecture(
       id: doc.id,
-      day: data['time'],
+      day: (data['time'] as Timestamp).toDate(),
     );
 
     return lecture;
