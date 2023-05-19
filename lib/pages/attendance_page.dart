@@ -86,7 +86,9 @@ class _AttendancePageState extends State<AttendancePage> {
                     ),
                     InkWell(
                       onTap: () => setState(
-                        () {},
+                        () {
+                          updateAttendance(studentsAttendance[index]);
+                        },
                       ),
                       child: Text(
                         style: TextStyle(
@@ -159,6 +161,26 @@ class _AttendancePageState extends State<AttendancePage> {
         {'studentId': student.id, 'name': student.name, 'isPresent': false},
       );
     }
+    setState(() {});
+  }
+
+  void updateAttendance(Attendance attendance) async {
+    var doc = database
+        .collection('instructor')
+        .doc(widget.instructor!)
+        .collection('sections')
+        .doc(widget.section!.id)
+        .collection('lectures')
+        .doc(widget.lecture!.id!)
+        .collection('attendance')
+        .doc(attendance.id);
+
+    await doc.set(
+      {'isPresent': !attendance.isPresent!},
+      SetOptions(merge: true),
+    );
+
+    attendance.isPresent = !attendance.isPresent!;
     setState(() {});
   }
 }
