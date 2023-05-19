@@ -8,7 +8,7 @@ class Section {
   String? days;
   String? time;
   String? courseId;
-  List<Lecture>? lectures;
+
   List<Student>? students;
 
   Section({
@@ -16,12 +16,11 @@ class Section {
     this.name,
     this.days,
     this.time,
-    this.lectures,
     this.courseId,
     this.students,
   });
 
-  Section getSection(DocumentSnapshot<Map<String, dynamic>> doc) {
+  factory Section.getSection(DocumentSnapshot<Map<String, dynamic>> doc) {
     var data = doc.data()!;
     var section = Section(
       id: doc.id,

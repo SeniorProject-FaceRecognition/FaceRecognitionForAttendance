@@ -9,7 +9,7 @@ class Instructor {
 
   Instructor({this.name, this.id, this.image, this.sections});
 
-  Instructor getInstructor(DocumentSnapshot<Map<String, dynamic>> doc) {
+  factory Instructor.getInstructor(DocumentSnapshot<Map<String, dynamic>> doc) {
     var data = doc.data()!;
     var instructor = Instructor(
       id: doc.id,

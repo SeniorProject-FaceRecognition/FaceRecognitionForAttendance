@@ -11,7 +11,7 @@ class Student {
     this.name,
   });
 
-  Student getStudent(DocumentSnapshot<Map<String, dynamic>> doc) {
+  factory Student.getStudent(DocumentSnapshot<Map<String, dynamic>> doc) {
     var data = doc.data()!;
     var student = Student(
       id: doc.id,

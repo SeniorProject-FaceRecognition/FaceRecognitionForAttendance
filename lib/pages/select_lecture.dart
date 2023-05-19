@@ -1,14 +1,17 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:senior_project/models/lecture.dart';
 import 'package:senior_project/models/section.dart';
 import 'package:syncfusion_flutter_datepicker/datepicker.dart';
 
+import '../models/instructor.dart';
+import '../models/student.dart';
 import 'attendance_page.dart';
 
 class SelectLecture extends StatefulWidget {
-  const SelectLecture({super.key, this.section, this.header});
-
+  const SelectLecture({super.key, this.section, this.header, this.instructor});
+  final Instructor? instructor;
   final Section? section;
   final String? header;
 
@@ -19,27 +22,40 @@ class SelectLecture extends StatefulWidget {
 DateTime date = DateTime.now();
 
 class _SelectLectureState extends State<SelectLecture> {
-  List<Lecture> lectures = [
-    Lecture(day: DateTime(2023, 5, 7, 13, 00), attendanceList: []),
-    Lecture(day: DateTime(2023, 5, 7, 11, 00), attendanceList: []),
-    Lecture(day: DateTime(2023, 5, 7, 15, 00), attendanceList: []),
-    Lecture(day: DateTime(2023, 5, 10, 15, 00), attendanceList: []),
-    Lecture(day: DateTime(2023, 5, 9, 15, 00), attendanceList: []),
-    Lecture(day: DateTime(2023, 5, 8, 15, 00), attendanceList: []),
+  final FirebaseFirestore database = FirebaseFirestore.instance;
+  List<Student>? students = [
+    // Student(studentId: "1937439", name: "Mohammed"),
+    // Student(studentId: "2056841", name: "Khalid"),
+    // Student(studentId: "1865454", name: "Abdullah"),
   ];
+  List<Lecture> lectures = [
+    // Lecture(day: DateTime(2023, 5, 7, 13, 00), attendanceList: []),
+    // Lecture(day: DateTime(2023, 5, 7, 11, 00), attendanceList: []),
+    // Lecture(day: DateTime(2023, 5, 7, 15, 00), attendanceList: []),
+    // Lecture(day: DateTime(2023, 5, 10, 15, 00), attendanceList: []),
+    // Lecture(day: DateTime(2023, 5, 9, 15, 00), attendanceList: []),
+    // Lecture(day: DateTime(2023, 5, 8, 15, 00), attendanceList: []),
+  ];
+  @override
+  void initState() {
+    loadLectures();
+    loadStudents();
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
-    widget.section!.lectures = lectures
+    lectures
         .where((element) =>
             DateFormat.Md()
                 .format(date)
                 .compareTo(DateFormat.Md().format(element.day!)) ==
             0)
         .toList();
-    widget.section!.lectures!.sort(
+    lectures.sort(
       (a, b) => a.day!.compareTo(b.day!),
     );
+
     return Scaffold(
       appBar: AppBar(
         title: Center(
@@ -128,14 +144,14 @@ class _SelectLectureState extends State<SelectLecture> {
           ),
           Expanded(
             child: ListView.builder(
-              itemCount: widget.section!.lectures!.length,
+              itemCount: lectures.length,
               itemBuilder: (context, index) {
                 return InkWell(
                   onTap: () => Navigator.push(
                     context,
                     MaterialPageRoute(
                       builder: (context) => AttendancePage(
-                        lecture: widget.section!.lectures![index],
+                        lecture: lectures[index],
                         time: date,
                         section: widget.section,
                       ),
@@ -150,7 +166,7 @@ class _SelectLectureState extends State<SelectLecture> {
                     ),
                     child: Text(
                       DateFormat.jm().format(
-                        widget.section!.lectures![index].day!,
+                        lectures[index].day!,
                       ),
                     ),
                   ),
@@ -161,5 +177,30 @@ class _SelectLectureState extends State<SelectLecture> {
         ],
       ),
     );
+  }
+
+  void loadStudents() async {
+    var collection = await database
+        .collection('instructor')
+        .doc(widget.instructor!.id)
+        .collection('sections')
+        .doc(widget.section!.id)
+        .collection('students')
+        .get();
+
+    students = collection.docs.map((e) => Student.getStudent(e)).toList();
+    widget.section!.students = students;
+  }
+
+  void loadLectures() async {
+    var collection = await database
+        .collection('instructor')
+        .doc(widget.instructor!.id)
+        .collection('sections')
+        .doc(widget.section!.id)
+        .collection('lectures')
+        .get();
+
+    lectures = collection.docs.map((e) => Lecture.getLecture(e)).toList();
   }
 }

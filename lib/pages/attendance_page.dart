@@ -1,32 +1,29 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:senior_project/models/instructor.dart';
 import 'package:senior_project/models/lecture.dart';
 
 import '../models/attendance.dart';
 import '../models/section.dart';
-import '../models/student.dart';
 
 class AttendancePage extends StatefulWidget {
-  const AttendancePage({super.key, this.lecture, this.time, this.section});
+  const AttendancePage(
+      {super.key, this.lecture, this.time, this.section, this.instructor});
   final Lecture? lecture;
   final DateTime? time;
   final Section? section;
+  final Instructor? instructor;
   @override
   State<AttendancePage> createState() => _AttendancePageState();
 }
 
 class _AttendancePageState extends State<AttendancePage> {
+  List<Attendance> studentsAttendance = [];
+  final FirebaseFirestore database = FirebaseFirestore.instance;
   @override
   void initState() {
-    List<Attendance>? studentsAttendance;
-    List<Student>? students = widget.section!.students;
-    studentsAttendance = List.generate(
-      students!.length,
-      (index) => Attendance(
-        students[index],
-      ),
-    );
-    widget.lecture!.setStudents = studentsAttendance;
+    loadAttendance();
     super.initState();
   }
 
@@ -37,7 +34,7 @@ class _AttendancePageState extends State<AttendancePage> {
         title: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text("${widget.section!.courseId!} ${widget.section!.id!}"),
+            Text("${widget.section!.courseId!} ${widget.section!.name!}"),
             Row(
               children: [
                 Text(
@@ -62,38 +59,32 @@ class _AttendancePageState extends State<AttendancePage> {
               height: 15,
             );
           },
-          itemCount: widget.lecture!.attendanceList!.length,
+          itemCount: widget.section!.students!.length,
           itemBuilder: (context, index) {
-            print(widget.lecture!.attendanceList![index].isPresent);
             return Padding(
               padding: const EdgeInsets.symmetric(horizontal: 20),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Text(
-                    widget.lecture!.attendanceList![index].student!.id!,
+                    studentsAttendance[index].id!,
                     style: const TextStyle(fontWeight: FontWeight.w600),
                   ),
                   Text(
                     style: const TextStyle(fontWeight: FontWeight.w600),
-                    widget.lecture!.attendanceList![index].student!.name!,
+                    studentsAttendance[index].name!,
                   ),
                   InkWell(
                     onTap: () => setState(
-                      () {
-                        widget.lecture!.attendanceList![index].setIsPresent =
-                            !widget.lecture!.attendanceList![index].isPresent!;
-                        print(widget.lecture!.attendanceList![index].isPresent);
-                      },
+                      () {},
                     ),
                     child: Text(
                       style: TextStyle(
-                          color:
-                              widget.lecture!.attendanceList![index].isPresent!
-                                  ? Colors.green
-                                  : Colors.red,
+                          color: studentsAttendance[index].isPresent!
+                              ? Colors.green
+                              : Colors.red,
                           fontWeight: FontWeight.w600),
-                      widget.lecture!.attendanceList![index].isPresent!
+                      studentsAttendance[index].isPresent!
                           ? "Present"
                           : "Absent",
                     ),
@@ -105,5 +96,43 @@ class _AttendancePageState extends State<AttendancePage> {
         ),
       ),
     );
+  }
+
+  void loadAttendance() async {
+    var collection = await database
+        .collection('instructor')
+        .doc(widget.instructor!.id)
+        .collection('sections')
+        .doc(widget.section!.id)
+        .collection('lectures')
+        .doc(widget.lecture!.id!)
+        .collection('attendance')
+        .limit(widget.section!.students!.length)
+        .get();
+
+    if (collection.size != widget.section!.students!.length) {
+      genarateAttendance();
+    } else {
+      studentsAttendance =
+          collection.docs.map((e) => Attendance.getAttendance(e)).toList();
+    }
+  }
+
+  void genarateAttendance() async {
+    for (var i = 0; i < widget.section!.students!.length; i++) {
+      var student = widget.section!.students![i];
+      await database
+          .collection('instructor')
+          .doc(widget.instructor!.id)
+          .collection('sections')
+          .doc(widget.section!.id)
+          .collection('lectures')
+          .doc(widget.lecture!.id!)
+          .collection('attendance')
+          .doc(student.id)
+          .set(
+        {'studentId': student.id, 'name': student.name, 'isPresent': false},
+      );
+    }
   }
 }

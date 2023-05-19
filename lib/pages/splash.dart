@@ -16,7 +16,9 @@ class _SplashPageState extends State<SplashPage> {
   Widget build(BuildContext context) {
     final auth = Provider.of<Authentication>(context);
     if (auth.user != null) {
-      return const SelectClass();
+      return SelectClass(
+        instructorId: auth.user!.uid,
+      );
     } else {
       return const LoginPage();
     }

@@ -1,9 +1,23 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:senior_project/models/student.dart';
 
 class Attendance {
-  Student? student;
+  String? id;
+  String? studentId;
+  String? name;
   bool? isPresent = false;
 
-  Attendance(this.student);
-  set setIsPresent(bool x) => isPresent = x;
+  Attendance({this.id, this.studentId, this.name, this.isPresent});
+
+  factory Attendance.getAttendance(DocumentSnapshot<Map<String, dynamic>> doc) {
+    var data = doc.data()!;
+    var attendance = Attendance(
+      id: doc.id,
+      studentId: data['studentId'],
+      name: data['name'],
+      isPresent: data['isPresent'],
+    );
+
+    return attendance;
+  }
 }

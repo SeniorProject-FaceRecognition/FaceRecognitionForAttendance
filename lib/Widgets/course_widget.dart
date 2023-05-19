@@ -32,7 +32,7 @@ class _CourseWidgetState extends State<CourseWidget> {
             child: Padding(
               padding: const EdgeInsets.all(10),
               child: Text(
-                "${widget.sections![index].id!} ${widget.sections![index].courseId!}",
+                "${widget.sections![index].name!} ${widget.sections![index].courseId!}",
               ),
             ),
           ),
