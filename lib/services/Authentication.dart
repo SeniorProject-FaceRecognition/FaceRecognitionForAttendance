@@ -13,7 +13,6 @@ class Authentication with ChangeNotifier {
       await _auth.signInWithEmailAndPassword(email: email, password: password);
       notifyListeners();
     } catch (e) {
-      // ignore: avoid_print
       print(e.toString());
     }
     return null;
@@ -24,7 +23,6 @@ class Authentication with ChangeNotifier {
       await _auth.signOut();
       notifyListeners();
     } catch (e) {
-      // ignore: avoid_print
       print(
         e.toString(),
       );
@@ -36,7 +34,6 @@ class Authentication with ChangeNotifier {
       await _auth.sendPasswordResetEmail(email: email);
       notifyListeners();
     } catch (e) {
-      // ignore: avoid_print
       print(
         e.toString(),
       );

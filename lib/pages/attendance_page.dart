@@ -2,6 +2,8 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:senior_project/models/lecture.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
 
 import '../models/attendance.dart';
 import '../models/section.dart';
@@ -13,6 +15,7 @@ class AttendancePage extends StatefulWidget {
   final DateTime? time;
   final Section? section;
   final String? instructor;
+
   @override
   State<AttendancePage> createState() => _AttendancePageState();
 }
@@ -21,14 +24,37 @@ List<Attendance> studentsAttendance = [];
 
 class _AttendancePageState extends State<AttendancePage> {
   final FirebaseFirestore database = FirebaseFirestore.instance;
-
   bool isLoading = true;
-
+  String url = "10.24.26.131";
   @override
   void initState() {
     loadAttendance();
-    print(widget.lecture!.day);
+    //print(widget.lecture!.day);
     super.initState();
+  }
+
+  void fetchData() async {
+    setState(() {
+      isLoading = true;
+    });
+
+    try {
+      final response = await http.get(Uri.parse('http://$url:5000/api'));
+      print(response);
+      if (response.statusCode == 200) {
+        final jsonData = json.decode(response.body);
+        print(jsonData);
+      } else {
+        // Handle the error condition
+      }
+    } catch (e) {
+      // Handle any exception that occurs during the request
+      print(e.toString());
+    }
+
+    setState(() {
+      isLoading = false;
+    });
   }
 
   @override
@@ -60,6 +86,12 @@ class _AttendancePageState extends State<AttendancePage> {
               )
             ],
           ),
+          actions: [
+            IconButton(
+              icon: const Icon(Icons.refresh),
+              onPressed: fetchData,
+            ),
+          ],
         ),
         body: Padding(
           padding: const EdgeInsets.only(top: 36),
@@ -85,11 +117,10 @@ class _AttendancePageState extends State<AttendancePage> {
                       studentsAttendance[index].name!,
                     ),
                     InkWell(
-                      onTap: () => setState(
-                        () {
-                          updateAttendance(studentsAttendance[index]);
-                        },
-                      ),
+                      onTap: () {
+                        updateAttendance(studentsAttendance[index]);
+                        setState(() {});
+                      },
                       child: Text(
                         style: TextStyle(
                             color: studentsAttendance[index].isPresent!
@@ -112,25 +143,17 @@ class _AttendancePageState extends State<AttendancePage> {
   }
 
   void loadAttendance() async {
-    var checkIfEmpty = await database
+    var path = await database
         .collection('instructor')
         .doc(widget.instructor!)
         .collection('sections')
         .doc(widget.section!.id)
         .collection('lectures')
         .doc(widget.lecture!.id!)
-        .collection('attendance')
-        .limit(1)
-        .get();
-    var collection = await database
-        .collection('instructor')
-        .doc(widget.instructor!)
-        .collection('sections')
-        .doc(widget.section!.id)
-        .collection('lectures')
-        .doc(widget.lecture!.id!)
-        .collection('attendance')
-        .get();
+        .collection('attendance');
+    var checkIfEmpty = await path.limit(1).get();
+
+    var collection = await path.get();
 
     if (checkIfEmpty.size != 1) {
       genarateAttendance();
