@@ -26,6 +26,7 @@ class _AttendancePageState extends State<AttendancePage> {
   final FirebaseFirestore database = FirebaseFirestore.instance;
   bool isLoading = true;
   String url = "10.24.26.131";
+  Set<String> presentStudentIds = {};
   @override
   void initState() {
     loadAttendance();
@@ -43,7 +44,9 @@ class _AttendancePageState extends State<AttendancePage> {
       print(response);
       if (response.statusCode == 200) {
         final jsonData = json.decode(response.body);
+        presentStudentIds = Set.from(jsonData["student_ids"]);
         print(jsonData);
+        print(presentStudentIds);
       } else {
         // Handle the error condition
       }
@@ -103,33 +106,34 @@ class _AttendancePageState extends State<AttendancePage> {
             },
             itemCount: widget.section!.students!.length,
             itemBuilder: (context, index) {
+              final studentAttendance = studentsAttendance[index];
+              final isPresent =
+                  presentStudentIds.contains(studentAttendance.id);
+              // Update the attendance of the student
+              studentAttendance.isPresent = isPresent;
               return Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 20),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Text(
-                      studentsAttendance[index].id!,
+                      studentAttendance.id!,
                       style: const TextStyle(fontWeight: FontWeight.w600),
                     ),
                     Text(
                       style: const TextStyle(fontWeight: FontWeight.w600),
-                      studentsAttendance[index].name!,
+                      studentAttendance.name!,
                     ),
                     InkWell(
                       onTap: () {
-                        updateAttendance(studentsAttendance[index]);
+                        updateAttendance(studentAttendance);
                         setState(() {});
                       },
                       child: Text(
+                        isPresent ? "Present" : "Absent",
                         style: TextStyle(
-                            color: studentsAttendance[index].isPresent!
-                                ? Colors.green
-                                : Colors.red,
+                            color: isPresent ? Colors.green : Colors.red,
                             fontWeight: FontWeight.w600),
-                        studentsAttendance[index].isPresent!
-                            ? "Present"
-                            : "Absent",
                       ),
                     ),
                   ],
@@ -143,7 +147,7 @@ class _AttendancePageState extends State<AttendancePage> {
   }
 
   void loadAttendance() async {
-    var path = await database
+    var path = database
         .collection('instructor')
         .doc(widget.instructor!)
         .collection('sections')
