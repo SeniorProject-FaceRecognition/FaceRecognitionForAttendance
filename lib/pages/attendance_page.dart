@@ -4,7 +4,7 @@ import 'package:intl/intl.dart';
 import 'package:senior_project/models/lecture.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
-
+import 'package:test/test.dart';
 import '../models/attendance.dart';
 import '../models/section.dart';
 
@@ -27,10 +27,11 @@ class _AttendancePageState extends State<AttendancePage> {
   bool isLoading = true;
   String url = "10.24.26.131";
   Set<String> presentStudentIds = {};
+  int index = 0;
   @override
   void initState() {
     loadAttendance();
-    //print(widget.lecture!.day);
+
     super.initState();
   }
 
@@ -106,11 +107,13 @@ class _AttendancePageState extends State<AttendancePage> {
             },
             itemCount: widget.section!.students!.length,
             itemBuilder: (context, index) {
+              index = index;
               final studentAttendance = studentsAttendance[index];
               final isPresent =
                   presentStudentIds.contains(studentAttendance.id);
               // Update the attendance of the student
               studentAttendance.isPresent = isPresent;
+
               return Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 20),
                 child: Row(
@@ -209,5 +212,15 @@ class _AttendancePageState extends State<AttendancePage> {
 
     attendance.isPresent = !attendance.isPresent!;
     setState(() {});
+  }
+
+  void main() {
+    test('Boolean should be turned to opposite value', () {
+      final bool presentValue = studentsAttendance[index].isPresent!;
+
+      updateAttendance(studentsAttendance[index]);
+
+      expect(studentsAttendance[index].isPresent, !presentValue);
+    });
   }
 }
