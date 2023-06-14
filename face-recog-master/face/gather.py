@@ -15,6 +15,14 @@ ap.add_argument("-o", "--output", required=True,
 	help="Please pass -o or --output to help label the face")
 args = vars(ap.parse_args())
 
+
+# Create the output folder if it doesn't exist
+output_folder = "images/" + args["output"]
+if not os.path.exists(output_folder):
+    os.makedirs(output_folder)
+    print(f"Created folder: {output_folder}")
+
+
 # load OpenCV's Haar cascade for face detection from disk
 face_cascade = cv2.CascadeClassifier('cascades/haarcascade_frontalface_default.xml')
 # Generate the new file name

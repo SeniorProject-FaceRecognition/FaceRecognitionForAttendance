@@ -10,29 +10,26 @@ import time
 import cv2
 import os
 from flask import Flask, jsonify
+
 app = Flask(__name__)
 names = []
-@app.route('/api')
+
+@app.route('/')
 def hello_world():
-    names = []
     return test()
 
-if __name__ == '__main__':
-    app.run(host="0.0.0.0",port=5000)
-
 def is_in_array(name):
-  """Returns True if the given name is already in the array, False otherwise."""
-  for existing_name in names:
-    if existing_name == name:
-      return True
-  return False
+    """Returns True if the given name is already in the array, False otherwise."""
+    for existing_name in names:
+        if existing_name == name:
+            return True
+    return False
 
 def add_to_array(name):
-  """Adds the given name to the array if it is not already in it."""
-  if not is_in_array(name):
-    names.append(name)
-    print(name)
-
+    """Adds the given name to the array if it is not already in it."""
+    if not is_in_array(name):
+        names.append(name)
+        print(name)
 
 def test():
     try:
@@ -115,6 +112,9 @@ def test():
             return jsonify(message="The names array is empty")
         else:
             return jsonify(names=names)
-
+    
     except Exception as e:
         return jsonify(message="An error occurred: {}".format(str(e)))
+
+if __name__ == '__main__':
+    app.run(host="0.0.0.0", port=5000)

@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:senior_project/models/lecture.dart';
 import 'package:http/http.dart' as http;
+import 'package:test/test.dart';
 import 'dart:convert';
 
 import '../models/attendance.dart';
@@ -20,23 +21,16 @@ class AttendancePage extends StatefulWidget {
   State<AttendancePage> createState() => _AttendancePageState();
 }
 
-List<Attendance> studentsAttendance = [];
-
 class _AttendancePageState extends State<AttendancePage> {
+  List<Attendance> studentsAttendance = [];
   final FirebaseFirestore database = FirebaseFirestore.instance;
   Set<String> presentStudentIds = {};
   bool isLoading = true;
   String url = "10.24.30.157";
-  @override
-  void initState() {
-    loadAttendance();
-    //print(widget.lecture!.day);
-    super.initState();
-  }
 
   void fetchData() async {
     setState(() {
-      isLoading = true;
+      // isLoading = true;
     });
 
     try {
@@ -48,6 +42,9 @@ class _AttendancePageState extends State<AttendancePage> {
         presentStudentIds = Set<String>.from(studentIds);
         print(studentIds);
         print(presentStudentIds);
+        for (var i = 0; i < studentIds.length; i++) {
+          updateAttendanceFromFace(studentIds[i]);
+        }
       } else {
         // Handle the error condition
       }
@@ -57,8 +54,15 @@ class _AttendancePageState extends State<AttendancePage> {
     }
 
     setState(() {
-      isLoading = false;
+      // isLoading = false;
     });
+  }
+
+  @override
+  void initState() {
+    loadAttendance();
+    print(widget.lecture!.day);
+    super.initState();
   }
 
   @override
@@ -147,6 +151,7 @@ class _AttendancePageState extends State<AttendancePage> {
   }
 
   void loadAttendance() async {
+    print('im in load');
     var path = await database
         .collection('instructor')
         .doc(widget.instructor!)
@@ -160,9 +165,11 @@ class _AttendancePageState extends State<AttendancePage> {
     var collection = await path.get();
 
     if (checkIfEmpty.size != 1) {
+      print("im in 164");
       genarateAttendance();
       studentsAttendance =
           collection.docs.map((e) => Attendance.getAttendance(e)).toList();
+      print(studentsAttendance.length);
       isLoading = false;
       setState(() {});
     } else {
@@ -189,6 +196,7 @@ class _AttendancePageState extends State<AttendancePage> {
         {'studentId': student.id, 'name': student.name, 'isPresent': false},
       );
     }
+    setState(() {});
   }
 
   void updateAttendance(Attendance attendance) async {
@@ -208,6 +216,29 @@ class _AttendancePageState extends State<AttendancePage> {
     );
 
     attendance.isPresent = !attendance.isPresent!;
+    setState(() {});
+  }
+
+  void updateAttendanceFromFace(String id) async {
+    var doc = database
+        .collection('instructor')
+        .doc(widget.instructor!)
+        .collection('sections')
+        .doc(widget.section!.id)
+        .collection('lectures')
+        .doc(widget.lecture!.id!)
+        .collection('attendance')
+        .doc(id);
+
+    await doc.set(
+      {'isPresent': true},
+      SetOptions(merge: true),
+    );
+
+    final student =
+        studentsAttendance.where((element) => element.id == id).first;
+
+    student.isPresent = true;
     setState(() {});
   }
 }
