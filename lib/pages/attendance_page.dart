@@ -4,7 +4,7 @@ import 'package:intl/intl.dart';
 import 'package:senior_project/models/lecture.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
-import 'package:test/test.dart';
+
 import '../models/attendance.dart';
 import '../models/section.dart';
 
@@ -24,14 +24,13 @@ List<Attendance> studentsAttendance = [];
 
 class _AttendancePageState extends State<AttendancePage> {
   final FirebaseFirestore database = FirebaseFirestore.instance;
-  bool isLoading = true;
-  String url = "10.24.26.131";
   Set<String> presentStudentIds = {};
-  int index = 0;
+  bool isLoading = true;
+  String url = "10.24.30.157";
   @override
   void initState() {
     loadAttendance();
-
+    //print(widget.lecture!.day);
     super.initState();
   }
 
@@ -42,11 +41,12 @@ class _AttendancePageState extends State<AttendancePage> {
 
     try {
       final response = await http.get(Uri.parse('http://$url:5000/api'));
-      print(response);
+      print(response.body);
       if (response.statusCode == 200) {
         final jsonData = json.decode(response.body);
-        presentStudentIds = Set.from(jsonData["student_ids"]);
-        print(jsonData);
+        final studentIds = List<String>.from(jsonData["names"]);
+        presentStudentIds = Set<String>.from(studentIds);
+        print(studentIds);
         print(presentStudentIds);
       } else {
         // Handle the error condition
@@ -107,36 +107,33 @@ class _AttendancePageState extends State<AttendancePage> {
             },
             itemCount: widget.section!.students!.length,
             itemBuilder: (context, index) {
-              index = index;
-              final studentAttendance = studentsAttendance[index];
-              final isPresent =
-                  presentStudentIds.contains(studentAttendance.id);
-              // Update the attendance of the student
-              studentAttendance.isPresent = isPresent;
-
               return Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 20),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Text(
-                      studentAttendance.id!,
+                      studentsAttendance[index].id!,
                       style: const TextStyle(fontWeight: FontWeight.w600),
                     ),
                     Text(
                       style: const TextStyle(fontWeight: FontWeight.w600),
-                      studentAttendance.name!,
+                      studentsAttendance[index].name!,
                     ),
                     InkWell(
                       onTap: () {
-                        updateAttendance(studentAttendance);
+                        updateAttendance(studentsAttendance[index]);
                         setState(() {});
                       },
                       child: Text(
-                        isPresent ? "Present" : "Absent",
                         style: TextStyle(
-                            color: isPresent ? Colors.green : Colors.red,
+                            color: studentsAttendance[index].isPresent!
+                                ? Colors.green
+                                : Colors.red,
                             fontWeight: FontWeight.w600),
+                        studentsAttendance[index].isPresent!
+                            ? "Present"
+                            : "Absent",
                       ),
                     ),
                   ],
@@ -150,7 +147,7 @@ class _AttendancePageState extends State<AttendancePage> {
   }
 
   void loadAttendance() async {
-    var path = database
+    var path = await database
         .collection('instructor')
         .doc(widget.instructor!)
         .collection('sections')
@@ -167,6 +164,7 @@ class _AttendancePageState extends State<AttendancePage> {
       studentsAttendance =
           collection.docs.map((e) => Attendance.getAttendance(e)).toList();
       isLoading = false;
+      setState(() {});
     } else {
       studentsAttendance =
           collection.docs.map((e) => Attendance.getAttendance(e)).toList();
@@ -191,7 +189,6 @@ class _AttendancePageState extends State<AttendancePage> {
         {'studentId': student.id, 'name': student.name, 'isPresent': false},
       );
     }
-    setState(() {});
   }
 
   void updateAttendance(Attendance attendance) async {
@@ -212,15 +209,5 @@ class _AttendancePageState extends State<AttendancePage> {
 
     attendance.isPresent = !attendance.isPresent!;
     setState(() {});
-  }
-
-  void main() {
-    test('Boolean should be turned to opposite value', () {
-      final bool presentValue = studentsAttendance[index].isPresent!;
-
-      updateAttendance(studentsAttendance[index]);
-
-      expect(studentsAttendance[index].isPresent, !presentValue);
-    });
   }
 }
