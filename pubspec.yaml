@@ -42,6 +42,7 @@ dependencies:
   provider: ^6.0.5
   cloud_firestore: ^4.7.0
   http:
+  test: 
 dev_dependencies:
   flutter_test:
     sdk: flutter

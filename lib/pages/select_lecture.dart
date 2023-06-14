@@ -177,9 +177,13 @@ class _SelectLectureState extends State<SelectLecture> {
         .doc(widget.section!.id)
         .collection('students')
         .get();
+    // await Future.delayed(Duration(seconds: 30));
 
     students = collection.docs.map((e) => Student.getStudent(e)).toList();
     widget.section!.students = students;
+    students!.forEach((element) {
+      print(element.id);
+    });
   }
 
   void loadLectures() async {
