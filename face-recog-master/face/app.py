@@ -79,7 +79,7 @@ def test():
                 # recognize?
                 name = ""
                 id_, conf = recognizer.predict(roi_gray)
-                if conf >= 65:
+                if conf >= 85:
                     name = labels[id_]
                     # get the width and height of the text box
                     (text_width, text_height) = cv2.getTextSize(name, font, fontscale, stroke)[0]
